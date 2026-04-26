@@ -40,7 +40,7 @@ export default function LoginPage({ onLogin, onBack }) {
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div style={{ fontSize: 48, marginBottom: 8 }}>🏀</div>
           <h1 style={{ fontSize: 36, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", color: "white", margin: 0 }}>
-            <span style={{ color: "#4ade80" }}>NAGA</span> HIJAU
+            <span style={{ color: "#4ade80" }}>SEMBILAN</span> BASKETBALL
           </h1>
           <p style={{ color: "#6b7280", fontSize: 14, marginTop: 6, fontFamily: "'Barlow', sans-serif" }}>
             SMAN 9 Surabaya · Dashboard Latihan
