@@ -1,59 +1,34 @@
 import { useMemo } from "react";
-import { ZONES, getPct, parseNum, parsePace } from "../utils/statHelpers";
+import { ZONES, getPct, aggregateZones } from "../utils/statHelpers";
 
-export function useFilteredStats({ shootingData, runningData, selectedPlayer, dateFrom, dateTo }) {
+// activeIds: Set player_id dengan status "aktif" — pemain lain tidak dihitung
+export function useFilteredStats({ shootingData, activeIds, selectedPlayer, dateFrom, dateTo }) {
   const filteredShooting = useMemo(() => {
     return (shootingData || []).filter((d) => {
+      if (!activeIds.has(d.player_id)) return false;
       const matchPlayer = selectedPlayer === "ALL" || String(d.player_id) === String(selectedPlayer);
       const matchDate   = d.date >= dateFrom && d.date <= dateTo;
       return matchPlayer && matchDate;
     });
-  }, [shootingData, selectedPlayer, dateFrom, dateTo]);
+  }, [shootingData, activeIds, selectedPlayer, dateFrom, dateTo]);
 
-  const filteredRunning = useMemo(() => {
-    return (runningData || []).filter((d) => {
-      const matchPlayer = selectedPlayer === "ALL" || String(d.player_id) === String(selectedPlayer);
-      const matchDate   = d.date >= dateFrom && d.date <= dateTo;
-      return matchPlayer && matchDate;
-    });
-  }, [runningData, selectedPlayer, dateFrom, dateTo]);
-
-  const zoneData = useMemo(() => {
-    const agg = {};
-    ZONES.forEach((z) => { agg[z.key] = { made: 0, attempt: 0 }; });
-    filteredShooting.forEach((d) => {
-      ZONES.forEach((z) => {
-        agg[z.key].made    += Number(d[z.made])    || 0;
-        agg[z.key].attempt += Number(d[z.attempt]) || 0;
-      });
-    });
-    return agg;
-  }, [filteredShooting]);
+  const zoneData = useMemo(() => aggregateZones(filteredShooting), [filteredShooting]);
 
   const summary = useMemo(() => {
-    const totalShots = ZONES.reduce((s, z) => s + (zoneData[z.key].attempt || 0), 0);
-    const totalMade  = ZONES.reduce((s, z) => s + (zoneData[z.key].made    || 0), 0);
-    const totalKm    = filteredRunning.reduce((s, d) => s + parseNum(d.jarak_km), 0);
-    const avgPace    = filteredRunning.length
-      ? (filteredRunning.reduce((s, d) => s + parsePace(d.pace_min_per_km), 0) / filteredRunning.length)
-      : null;
-
-    const formatPace = (decimal) => {
-      if (!decimal) return "—";
-      const min = Math.floor(decimal);
-      const sec = Math.round((decimal - min) * 60);
-      return `${min}:${String(sec).padStart(2, "0")}`;
-    };
-
+    const totalShots = ZONES.reduce((s, z) => s + zoneData[z.key].attempt, 0);
+    const totalMade  = ZONES.reduce((s, z) => s + zoneData[z.key].made, 0);
+    const zonePcts = ZONES
+      .map((z) => ({ label: z.label, pct: getPct(zoneData[z.key].made, zoneData[z.key].attempt) }))
+      .filter((z) => z.pct !== null);
+    const best = zonePcts.length ? zonePcts.reduce((a, b) => (b.pct > a.pct ? b : a)) : null;
     return {
       overallPct:   getPct(totalMade, totalShots),
       totalShots,
       totalMade,
-      totalKm:      totalKm.toFixed(1),
-      avgPace:      formatPace(avgPace),
-      sessionCount: filteredShooting.length + filteredRunning.length,
+      sessionCount: filteredShooting.length,
+      bestZone:     best,
     };
-  }, [zoneData, filteredRunning, filteredShooting]);
+  }, [zoneData, filteredShooting]);
 
-  return { filteredShooting, filteredRunning, zoneData, summary };
+  return { filteredShooting, zoneData, summary };
 }

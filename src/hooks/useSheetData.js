@@ -1,38 +1,57 @@
-import { useState, useEffect } from "react";
-import { fetchPlayersData, fetchShootingData, fetchRunningData } from "../utils/parseSheetData";
+import { useState, useEffect, useCallback } from "react";
+import {
+  fetchAllTabs, normalizePlayers, normalizeShooting, normalizePhysical,
+  normalizeSchedule, normalizeBenchmark,
+} from "../utils/sheets";
 import { PLAYERS }       from "../data/players";
 import { SHOOTING_DATA } from "../data/shootingData";
-import { RUNNING_DATA }  from "../data/runningData";
+import { PHYSICAL_MOCK } from "../data/physicalMock";
+
+// Mock tes fisik hanya untuk uji lokal — set VITE_USE_MOCK_PHYSICAL=true di .env.local
+const USE_MOCK_PHYSICAL = import.meta.env.VITE_USE_MOCK_PHYSICAL === "true";
+
+const FALLBACK_SHOOTING = normalizeShooting(SHOOTING_DATA);
+
+async function fetchParsed() {
+  const tabs = await fetchAllTabs();
+  const shooting = normalizeShooting(tabs.shooting);
+  return {
+    players:      normalizePlayers(tabs.players),
+    shootingData: shooting.valid,
+    shootingAll:  shooting.all,
+    physical:     normalizePhysical(USE_MOCK_PHYSICAL ? PHYSICAL_MOCK : tabs.physical),
+    schedule:     normalizeSchedule(tabs.schedule),
+    benchmarks:   normalizeBenchmark(tabs.benchmark),
+  };
+}
 
 export function useSheetData() {
-  const [players,      setPlayers]      = useState(PLAYERS);
-  const [shootingData, setShootingData] = useState(SHOOTING_DATA);
-  const [runningData,  setRunningData]  = useState(RUNNING_DATA);
-  const [loading,      setLoading]      = useState(true);
-  const [error,        setError]        = useState(null);
+  const [data, setData] = useState({
+    players:      PLAYERS,
+    shootingData: FALLBACK_SHOOTING.valid,
+    shootingAll:  FALLBACK_SHOOTING.all,
+    physical:     [],
+    schedule:     [],
+    benchmarks:   [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState(null);
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const [p, s, r] = await Promise.all([
-          fetchPlayersData(),
-          fetchShootingData(),
-          fetchRunningData(),
-        ]);
-        if (p.length > 0) setPlayers(p);
-        if (s.length > 0) setShootingData(s);
-        if (r.length > 0) setRunningData(r);
-      } catch (err) {
-        console.warn("Sheets fetch gagal, pakai dummy:", err.message);
+  const load = useCallback(() => {
+    return fetchParsed()
+      .then((next) => {
+        setData((prev) => ({ ...next, players: next.players.length ? next.players : prev.players }));
+        setError(null);
+      })
+      .catch((err) => {
+        console.warn("Sheets fetch gagal, pakai data lokal:", err.message);
         setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  return { players, shootingData, runningData, loading, error };
+  useEffect(() => { load(); }, [load]);
+
+  // reload() tidak memunculkan spinner penuh — dipakai setelah submit form
+  return { ...data, loading, error, reload: load };
 }

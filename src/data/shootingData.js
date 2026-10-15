@@ -6,6 +6,7 @@
 // wing_kanan_masuk, wing_kanan_percobaan,
 // corner_kanan_masuk, corner_kanan_percobaan
 
+// Fallback lokal kalau Google Sheets gagal dimuat.
 export const SHOOTING_DATA = [
   { date: "2026-04-17", player_name: "Raka",  player_id: 1, corner_kiri_masuk: 10, corner_kiri_percobaan: 21, wing_kiri_masuk: 10, wing_kiri_percobaan: 21, top_masuk: 10, top_percobaan: 17, wing_kanan_masuk: 10, wing_kanan_percobaan: 23, corner_kanan_masuk: 10, corner_kanan_percobaan: 20 },
   { date: "2026-04-18", player_name: "Adit",  player_id: 2, corner_kiri_masuk:  8, corner_kiri_percobaan: 18, wing_kiri_masuk: 12, wing_kiri_percobaan: 20, top_masuk:  9, top_percobaan: 15, wing_kanan_masuk: 11, wing_kanan_percobaan: 20, corner_kanan_masuk:  7, corner_kanan_percobaan: 16 },

@@ -3,23 +3,23 @@ const WA_URL    = `https://wa.me/${WA_NUMBER}`;
 
 export default function AboutSection() {
   return (
-    <div style={{ padding: "80px 24px 100px", maxWidth: 720, margin: "0 auto" }}>
+    <div style={{ padding: "64px 16px 80px", maxWidth: 720, margin: "0 auto" }}>
 
       {/* Section label */}
-      <div style={{ fontSize: 11, color: "#4ade80", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 20 }}>
+      <div style={{ fontSize: 11, color: "#14532D", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 20 }}>
         Tentang Kami
       </div>
 
       {/* Heading */}
-<h2 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 900, textTransform: "uppercase", lineHeight: 1, letterSpacing: "-0.02em", color: "#f0fdf4", marginBottom: 32 }}>
+<h2 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 900, textTransform: "uppercase", lineHeight: 1, letterSpacing: "-0.02em", color: "#0B0F0D", marginBottom: 32 }}>
   Tekadku hanya<br />
-  <span style={{ color: "#4ade80" }}>prestasi.</span>
+  <span style={{ color: "#14532D" }}>prestasi.</span>
 </h2>
 
 {/* Paragraphs */}
-<div style={{ display: "flex", flexDirection: "column", gap: 18, fontFamily: "'Barlow', sans-serif", fontSize: 16, color: "#9ca3af", lineHeight: 1.8 }}>
+<div style={{ display: "flex", flexDirection: "column", gap: 18, fontFamily: "'Barlow', sans-serif", fontSize: 16, color: "#3F4642", lineHeight: 1.8 }}>
   <p>
-    Sembilan Basketball merupakan tim basket resmi <strong style={{ color: "#d1d5db" }}>SMAN 9 Surabaya</strong> yang aktif berpartisipasi dalam berbagai turnamen tingkat kota maupun provinsi di Jawa Timur.
+    Sembilan Basketball merupakan tim basket resmi <strong style={{ color: "#111613" }}>SMAN 9 Surabaya</strong> yang aktif berpartisipasi dalam berbagai turnamen tingkat kota maupun provinsi di Jawa Timur.
   </p>
   <p>
     Tim ini menjalankan latihan secara teratur dengan menekankan penguatan mental, kedisiplinan, serta kerja sama tim sebagai dasar dalam meningkatkan performa pemain.
@@ -30,7 +30,7 @@ export default function AboutSection() {
 </div>
 
       {/* Divider */}
-      <div style={{ width: 48, height: 2, background: "#1f3329", borderRadius: 2, margin: "36px 0" }} />
+      <div style={{ width: 48, height: 2, background: "#D3DDD5", borderRadius: 2, margin: "36px 0" }} />
 
       {/* WA CTA */}
       <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
@@ -40,12 +40,12 @@ export default function AboutSection() {
           rel="noopener noreferrer"
           style={{
             display: "inline-flex", alignItems: "center", gap: 10,
-            background: "linear-gradient(135deg, #16a34a, #15803d)",
+            background: "#14532D",
             color: "white", textDecoration: "none",
             padding: "13px 28px", borderRadius: 8,
             fontSize: 14, fontWeight: 800, letterSpacing: "0.08em",
             textTransform: "uppercase", fontFamily: "'Barlow Condensed', sans-serif",
-            boxShadow: "0 0 28px #16a34a33",
+            
             transition: "transform 0.2s",
           }}
           onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
@@ -57,7 +57,7 @@ export default function AboutSection() {
           </svg>
           Hubungi Kami
         </a>
-        <span style={{ color: "#4b5563", fontSize: 13, fontFamily: "'Barlow', sans-serif" }}>
+        <span style={{ color: "#5B625D", fontSize: 13, fontFamily: "'Barlow', sans-serif" }}>
           Abizar
         </span>
       </div>
