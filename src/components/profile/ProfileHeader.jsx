@@ -27,21 +27,30 @@ export default function ProfileHeader({ player, rounds }) {
   ];
 
   return (
-    <div style={{ background: C.primary, color: C.onPrimary, borderRadius: 14, padding: "20px 18px", marginBottom: 16 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-        <Avatar key={player.player_id} name={player.player_name} src={player.pas_foto} />
+    <div style={{ position: "relative", overflow: "hidden", background: `linear-gradient(135deg, ${C.brand}, ${C.brandDeep})`, color: C.white, borderRadius: 20, padding: "24px 20px" }}>
+      {/* Garis lapangan dekoratif */}
+      <svg aria-hidden viewBox="0 0 200 200" style={{ position: "absolute", right: -40, top: -40, width: 240, height: 240, opacity: 0.12, pointerEvents: "none" }}>
+        <circle cx="100" cy="100" r="60" fill="none" stroke="#fff" strokeWidth="3" />
+        <circle cx="100" cy="100" r="96" fill="none" stroke="#fff" strokeWidth="3" />
+        <line x1="0" y1="100" x2="200" y2="100" stroke="#fff" strokeWidth="3" />
+      </svg>
+
+      <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
+        <Avatar key={player.player_id} name={player.player_name} src={player.pas_foto} size={76} />
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.8, fontWeight: 700 }}>Profil Fisik</div>
-          <h1 style={{ fontSize: "clamp(26px, 7vw, 36px)", fontWeight: 900, textTransform: "uppercase", margin: 0, lineHeight: 1.05, overflowWrap: "anywhere" }}>
+          <div style={{ fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", opacity: 0.8, fontWeight: 700 }}>
+            {POSISI[player.posisi] || "Pemain"}{player.angkatan ? ` · Angkatan ${player.angkatan}` : ""}
+          </div>
+          <h2 style={{ fontSize: "clamp(28px, 7vw, 42px)", fontWeight: 900, textTransform: "uppercase", margin: 0, lineHeight: 1, overflowWrap: "anywhere" }}>
             {player.player_name}
-          </h1>
+          </h2>
         </div>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(96px, 1fr))", gap: 10 }}>
+      <div style={{ position: "relative", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: 10 }}>
         {facts.map(([label, value]) => (
-          <div key={label} style={{ background: "#FFFFFF14", borderRadius: 8, padding: "8px 10px" }}>
-            <div style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", opacity: 0.8, fontWeight: 700 }}>{label}</div>
-            <div style={{ fontSize: 17, fontWeight: 800, fontFamily: FONT_BODY }}>{value}</div>
+          <div key={label} style={{ background: "#FFFFFF14", border: "1px solid #FFFFFF1F", borderRadius: 12, padding: "10px 12px" }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", opacity: 0.75, fontWeight: 700 }}>{label}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, fontFamily: FONT_BODY, marginTop: 2 }}>{value}</div>
           </div>
         ))}
       </div>

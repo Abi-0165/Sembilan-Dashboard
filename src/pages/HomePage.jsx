@@ -1,12 +1,14 @@
-import HeroSection  from "../components/home/HeroSection";
-import AboutSection from "../components/home/AboutSection";
-import { C } from "../theme";
+import HeroSection    from "../components/home/HeroSection";
+import GallerySection from "../components/home/GallerySection";
+import AboutSection   from "../components/home/AboutSection";
+import { C, FONT_HEAD } from "../theme";
 
 export default function HomePage({ onNavigate }) {
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "'Barlow Condensed', sans-serif", overflowX: "hidden" }}>
-      <HeroSection  onNavigate={onNavigate} />
+    <main style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: FONT_HEAD, overflowX: "hidden" }}>
+      <HeroSection    onNavigate={onNavigate} />
+      <GallerySection />
       <AboutSection />
-    </div>
+    </main>
   );
 }

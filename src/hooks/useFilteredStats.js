@@ -7,7 +7,8 @@ export function useFilteredStats({ shootingData, activeIds, selectedPlayer, date
     return (shootingData || []).filter((d) => {
       if (!activeIds.has(d.player_id)) return false;
       const matchPlayer = selectedPlayer === "ALL" || String(d.player_id) === String(selectedPlayer);
-      const matchDate   = d.date >= dateFrom && d.date <= dateTo;
+      // Tanggal kosong = tanpa batas
+      const matchDate   = (!dateFrom || d.date >= dateFrom) && (!dateTo || d.date <= dateTo);
       return matchPlayer && matchDate;
     });
   }, [shootingData, activeIds, selectedPlayer, dateFrom, dateTo]);

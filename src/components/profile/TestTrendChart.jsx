@@ -4,7 +4,8 @@ import {
 } from "recharts";
 import { teamAverageByRound, unitShort } from "../../utils/physicalScore";
 import { fmtNum } from "../../utils/statHelpers";
-import { C, FONT_HEAD, FONT_BODY, card, sectionLabel, input } from "../../theme";
+import { C, FONT_HEAD, card, input } from "../../theme";
+import { SectionHeader } from "../layout/PageShell";
 
 const tick = { fill: C.textSub, fontSize: 11, fontFamily: FONT_HEAD };
 
@@ -47,20 +48,18 @@ export default function TestTrendChart({ rounds, physical, activeIds, benchmarks
 
   return (
     <div style={card}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
-        <div>
-          <div style={sectionLabel}>Perkembangan per Tes</div>
-          <div style={{ fontSize: 12, color: C.textSub, fontFamily: FONT_BODY, marginTop: 2 }}>
-            Garis naik = membaik{reversed && " (sumbu waktu dibalik: makin cepat makin atas)"}
-          </div>
-        </div>
-        <select aria-label="Pilih tes" value={bench.test_key} onChange={(e) => setTestKey(e.target.value)}
-          style={{ ...input, width: "auto", minWidth: 180 }}>
-          {benchmarks.map((b) => <option key={b.test_key} value={b.test_key}>{b.label}</option>)}
-        </select>
-      </div>
+      <SectionHeader
+        title="Perkembangan per Tes"
+        sub={`Garis naik = membaik${reversed ? " (sumbu waktu dibalik: makin cepat makin atas)" : ""}`}
+        right={
+          <select aria-label="Pilih tes" value={bench.test_key} onChange={(e) => setTestKey(e.target.value)}
+            style={{ ...input, width: "auto", minWidth: 200 }}>
+            {benchmarks.map((b) => <option key={b.test_key} value={b.test_key}>{b.label}</option>)}
+          </select>
+        }
+      />
 
-      <ResponsiveContainer width="100%" height={260}>
+      <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.lineSoft} />
           <XAxis dataKey="name" tick={tick} tickLine={false} axisLine={{ stroke: C.line }}

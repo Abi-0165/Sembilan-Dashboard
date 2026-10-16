@@ -1,16 +1,18 @@
 import { useState, useMemo } from "react";
 import { useSheetData }  from "./hooks/useSheetData";
+import { useTheme }      from "./hooks/useTheme";
 import { isActive }      from "./utils/sheets";
-import { C }             from "./theme";
+import GlobalStyles  from "./components/layout/GlobalStyles";
 import Navbar        from "./components/layout/Navbar";
 import Footer        from "./components/layout/Footer";
 import LoginPage     from "./pages/LoginPage";
 import HomePage      from "./pages/HomePage";
 import DashboardPage from "./pages/DashboardPage";
-import InputPage     from "./pages/InputPage";
 import ProfilePage   from "./pages/ProfilePage";
 
-const PROTECTED = ["dashboard", "profil", "input"];
+// Halaman input dinonaktifkan sementara — pelatih mengisi langsung di Google Sheets.
+// Komponennya (pages/InputPage, dashboard/InputForm) masih ada kalau mau dipasang lagi.
+const PROTECTED = ["dashboard", "profil"];
 const PAGES = ["home", ...PROTECTED];
 
 export default function App() {
@@ -34,40 +36,29 @@ export default function App() {
     window.scrollTo(0, 0);
   }
 
-  const { players, shootingData, shootingAll, physical, schedule, benchmarks, loading, error, reload } = useSheetData();
+  const { theme, toggle: toggleTheme } = useTheme();
+
+  const { players, shootingData, physical, schedule, benchmarks, loading, error } = useSheetData();
   // Hanya pemain berstatus "aktif" yang tampil di dropdown & dihitung di rata-rata tim
   const activePlayers = useMemo(() => players.filter(isActive), [players]);
-
-  const STYLES = `
-    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap');
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: ${C.bg}; color: ${C.text}; font-family: 'Barlow Condensed', sans-serif; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: ${C.bg}; }
-    ::-webkit-scrollbar-thumb { background: ${C.line}; border-radius: 3px; }
-    select:focus, input:focus { border-color: ${C.primary} !important; box-shadow: 0 0 0 3px ${C.primary}22; }
-    * { -webkit-tap-highlight-color: transparent; }
-    html, body { overflow-x: hidden; max-width: 100vw; }
-  `;
 
   if (PROTECTED.includes(page) && !isAuth) {
     return (
       <>
-        <style>{STYLES}</style>
+        <GlobalStyles />
         <LoginPage onLogin={handleLogin} onBack={() => navigate("home")} />
       </>
     );
   }
 
   return (
-    <>
-      <style>{STYLES}</style>
-      <Navbar page={page} onNavigate={navigate} />
+    <div className="has-tabbar">
+      <GlobalStyles />
+      <Navbar page={page} onNavigate={navigate} theme={theme} onToggleTheme={toggleTheme} />
       {page === "home"      && <HomePage onNavigate={navigate} />}
       {page === "dashboard" && <DashboardPage players={activePlayers} shootingData={shootingData} loading={loading} error={error} />}
       {page === "profil"    && <ProfilePage players={activePlayers} physical={physical} schedule={schedule} benchmarks={benchmarks} loading={loading} error={error} />}
-      {page === "input"     && <InputPage players={activePlayers} existingRows={shootingAll} onSaved={reload} />}
       <Footer />
-    </>
+    </div>
   );
 }

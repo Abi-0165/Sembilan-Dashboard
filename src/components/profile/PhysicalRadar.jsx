@@ -3,7 +3,8 @@ import {
   Tooltip, ResponsiveContainer,
 } from "recharts";
 import { radarAxes, axisScores } from "../../utils/physicalScore";
-import { C, FONT_HEAD, card, sectionLabel } from "../../theme";
+import { C, FONT_HEAD, card } from "../../theme";
+import { SectionHeader } from "../layout/PageShell";
 
 function RadarTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
@@ -47,8 +48,8 @@ export default function PhysicalRadar({ benchmarks, schedule, initial, latest })
 
   return (
     <div style={card}>
-      <div style={{ ...sectionLabel, marginBottom: 4 }}>Skor Fisik (0–100)</div>
-      <ResponsiveContainer width="100%" height={300}>
+      <SectionHeader title="Skor Fisik" sub="Skala 0–100 dibanding patokan tim" style={{ marginBottom: 4 }} />
+      <ResponsiveContainer width="100%" height={320}>
         <RadarChart data={data} outerRadius="72%" margin={{ top: 10, right: 24, bottom: 10, left: 24 }}>
           <PolarGrid stroke={C.line} />
           <PolarAngleAxis dataKey="axis" tick={{ fill: C.text, fontSize: 12, fontFamily: FONT_HEAD, fontWeight: 700 }} />

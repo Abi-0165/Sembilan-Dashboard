@@ -19,14 +19,14 @@ export default function Avatar({ name, src, size = 72 }) {
   const [failed, setFailed] = useState(false);
   const base = {
     width: size, height: size, borderRadius: "50%", flexShrink: 0,
-    border: `2px solid ${C.onPrimary}`,
+    border: `2px solid ${C.white}`,
   };
   if (isUrl(src) && !failed) {
     return <img src={src} alt={name} onError={() => setFailed(true)} style={{ ...base, objectFit: "cover", background: C.line }} />;
   }
   return (
     <div aria-label={name} style={{
-      ...base, background: C.onPrimary, color: C.primary, display: "flex",
+      ...base, background: C.white, color: C.brand, display: "flex",
       alignItems: "center", justifyContent: "center", fontFamily: FONT_HEAD,
       fontWeight: 900, fontSize: size * 0.4,
     }}>

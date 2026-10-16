@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { BrandMark } from "../components/layout/Navbar";
+import { C, FONT_HEAD, FONT_BODY, card, input, fieldLabel, primaryBtn } from "../theme";
 
 export default function LoginPage({ onLogin, onBack }) {
   const [pw, setPw]       = useState("");
   const [error, setError] = useState(false);
   const [shake, setShake] = useState(false);
 
-  function handleSubmit() {
+  function handleSubmit(e) {
+    e.preventDefault();
     if (pw === "songowani") {
       onLogin();
     } else {
@@ -15,13 +18,18 @@ export default function LoginPage({ onLogin, onBack }) {
     }
   }
 
-  function handleKey(e) {
-    if (e.key === "Enter") handleSubmit();
-  }
-
   return (
-    <div style={{ minHeight: "100vh", background: "#FBFBF8", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Barlow Condensed', sans-serif", padding: 16 }}>
+    <main className="login" style={{ fontFamily: FONT_HEAD, background: C.bg }}>
       <style>{`
+        .login { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr); }
+        .login-photo { display: none; position: relative; overflow: hidden; background: ${C.brandDeep}; }
+        .login-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 45% 30%; }
+        .login-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, ${C.brandDeep}F2 0%, ${C.brandDeep}40 55%, transparent 100%); }
+        .login-form { display: flex; align-items: center; justify-content: center; padding: 16px; background: radial-gradient(900px 420px at 50% -10%, ${C.primaryTint}, transparent 70%), ${C.bg}; }
+        @media (min-width: 900px) {
+          .login { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+          .login-photo { display: block; }
+        }
         @keyframes shake {
           0%,100% { transform: translateX(0); }
           20%      { transform: translateX(-8px); }
@@ -29,80 +37,65 @@ export default function LoginPage({ onLogin, onBack }) {
           60%      { transform: translateX(-6px); }
           80%      { transform: translateX(6px); }
         }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
       `}</style>
 
-      <div style={{ width: "100%", maxWidth: 380, animation: "fadeIn 0.4s ease" }}>
-        {/* Logo */}
-        <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>🏀</div>
-          <h1 style={{ fontSize: 36, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", color: "#0B0F0D", margin: 0 }}>
-            <span style={{ color: "#14532D" }}>SEMBILAN</span> BASKETBALL
-          </h1>
-          <p style={{ color: "#5B625D", fontSize: 14, marginTop: 6, fontFamily: "'Barlow', sans-serif" }}>
-            SMAN 9 Surabaya · Dashboard Latihan
-          </p>
+      <div className="login-photo" aria-hidden>
+        <img src="/images/free-throw.webp" alt="" />
+        <div style={{ position: "absolute", left: 40, right: 40, bottom: 40, zIndex: 1, color: C.white }}>
+          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", opacity: 0.8 }}>Dashboard Latihan</div>
+          <div style={{ fontSize: 44, fontWeight: 900, textTransform: "uppercase", lineHeight: 0.95, marginTop: 8 }}>Tekadku hanya<br /><span style={{ color: C.brandLight }}>prestasi.</span></div>
         </div>
+      </div>
 
-        {/* Card */}
-        <div style={{ background: "#FFFFFF", border: "1px solid #D3DDD5", borderRadius: 14, padding: 32, animation: shake ? "shake 0.5s ease" : "none" }}>
-          <div style={{ fontSize: 11, color: "#14532D", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>
-            Password
+      <div className="login-form">
+        <div className="fade-up" style={{ width: "100%", maxWidth: 400 }}>
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <div style={{ display: "inline-flex", marginBottom: 16 }}><BrandMark size={56} /></div>
+            <h1 style={{ fontSize: 34, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.03em", color: C.accent, lineHeight: 1 }}>
+              <span style={{ color: C.primary }}>Sembilan</span> Basketball
+            </h1>
+            <p style={{ color: C.textSub, fontSize: 15, marginTop: 8, fontFamily: FONT_BODY }}>
+              SMAN 9 Surabaya · Dashboard Latihan
+            </p>
           </div>
 
-          <input
-            type="password"
-            value={pw}
-            onChange={(e) => { setPw(e.target.value); setError(false); }}
-            onKeyDown={handleKey}
-            placeholder="Masukkan password..."
-            autoFocus
-            style={{
-              width: "100%", background: "#FFFFFF",
-              border: `1px solid ${error ? "#B42318" : "#D3DDD5"}`,
-              color: "#111613", padding: "12px 16px", borderRadius: 8,
-              fontSize: 15, fontFamily: "'Barlow Condensed', sans-serif",
-              fontWeight: 600, outline: "none", marginBottom: 8,
-              transition: "border-color 0.2s",
-            }}
-          />
+          <form onSubmit={handleSubmit} style={{ ...card, padding: 28, animation: shake ? "shake 0.5s ease" : "none" }}>
+            <label htmlFor="login-pw" style={fieldLabel}>Password</label>
+            <input
+              id="login-pw"
+              type="password"
+              value={pw}
+              onChange={(e) => { setPw(e.target.value); setError(false); }}
+              placeholder="Masukkan password..."
+              autoFocus
+              aria-invalid={error}
+              style={{ ...input, padding: "12px 14px", minHeight: 48, borderColor: error ? C.bad : C.line }}
+            />
 
-          {error && (
-            <div style={{ color: "#B42318", fontSize: 12, fontWeight: 600, marginBottom: 12, letterSpacing: "0.04em" }}>
-              ✕ Password salah
+            {error && (
+              <div role="alert" style={{ color: C.bad, fontSize: 13, fontWeight: 600, marginTop: 8, fontFamily: FONT_BODY }}>
+                Password salah, coba lagi.
+              </div>
+            )}
+
+            <button type="submit" style={{ ...primaryBtn, width: "100%", marginTop: 16, minHeight: 48 }}>
+              Masuk →
+            </button>
+          </form>
+
+          <p style={{ textAlign: "center", color: C.textSub, fontSize: 13, marginTop: 20, fontFamily: FONT_BODY }}>
+            Hanya untuk anggota tim basket SMAN 9
+          </p>
+
+          {onBack && (
+            <div style={{ textAlign: "center", marginTop: 12 }}>
+              <button onClick={onBack} style={{ background: "none", border: "none", color: C.primary, fontSize: 14, cursor: "pointer", fontFamily: FONT_HEAD, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: 8 }}>
+                ← Kembali ke Beranda
+              </button>
             </div>
           )}
-
-          <button
-            onClick={handleSubmit}
-            style={{
-              width: "100%", background: "#14532D",
-              color: "white", border: "none", padding: "13px 0",
-              borderRadius: 8, fontSize: 15, fontWeight: 800,
-              letterSpacing: "0.1em", textTransform: "uppercase",
-              cursor: "pointer", marginTop: error ? 0 : 8,
-              
-            }}
-          >
-            Masuk →
-          </button>
         </div>
-
-        <p style={{ textAlign: "center", color: "#5B625D", fontSize: 12, marginTop: 20 }}>
-          Hanya untuk anggota tim basket SMAN 9
-        </p>
-
-        {onBack && (
-          <div style={{ textAlign: "center", marginTop: 14 }}>
-            <button onClick={onBack} style={{ background: "none", border: "none", color: "#5B625D", fontSize: 13, cursor: "pointer", fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, letterSpacing: "0.05em" }}>
-              ← Kembali ke Beranda
-            </button>
-          </div>
-        )}
       </div>
-    </div>
+    </main>
   );
 }

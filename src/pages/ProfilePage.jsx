@@ -3,43 +3,51 @@ import ProfileHeader  from "../components/profile/ProfileHeader";
 import PhysicalRadar  from "../components/profile/PhysicalRadar";
 import DeltaCards     from "../components/profile/DeltaCards";
 import TestTrendChart from "../components/profile/TestTrendChart";
-import { PageShell, Loading, ErrorBanner } from "../components/layout/PageShell";
+import { PageShell, PageTitle, SectionHeader, Loading, ErrorBanner } from "../components/layout/PageShell";
 import { playerRounds, initialAndLatest } from "../utils/physicalScore";
 import { fmtDate } from "../utils/statHelpers";
-import { C, FONT_BODY, card, sectionLabel, input, fieldLabel } from "../theme";
+import { C, FONT_BODY, card, input, fieldLabel } from "../theme";
 
 function Empty({ children }) {
-  return <div style={{ ...card, color: C.textSub, fontFamily: FONT_BODY, fontSize: 14, lineHeight: 1.6 }}>{children}</div>;
+  return <div style={{ ...card, color: C.textSub, fontFamily: FONT_BODY, fontSize: 15, lineHeight: 1.6 }}>{children}</div>;
 }
 
 function ScheduleCard({ schedule }) {
   if (!schedule.length) return null;
+  const doneCount = schedule.filter((s) => s.status === "selesai").length;
   return (
     <div style={card}>
-      <div style={{ ...sectionLabel, marginBottom: 10 }}>Jadwal Tes Fisik</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {schedule.map((s) => {
+      <SectionHeader title="Jadwal Tes Fisik" sub={`${doneCount} dari ${schedule.length} tes selesai`} />
+      <ol style={{ listStyle: "none", display: "flex", flexDirection: "column" }}>
+        {schedule.map((s, i) => {
           const done = s.status === "selesai";
+          const last = i === schedule.length - 1;
           return (
-            <div key={s.test_round} style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: FONT_BODY, fontSize: 14 }}>
-              <span style={{
-                width: 26, height: 26, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 12, fontWeight: 800, background: done ? C.primary : C.surface, color: done ? C.onPrimary : C.textSub,
-                border: `1px solid ${done ? C.primary : C.line}`,
-              }}>{s.test_round}</span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, color: C.text }}>{s.nama_tes}</div>
-                <div style={{ fontSize: 12, color: C.textSub }}>
-                  {s.fase} · {s.tanggal_pelaksanaan ? fmtDate(s.tanggal_pelaksanaan) : s.target_waktu}
+            <li key={s.test_round} style={{ display: "flex", gap: 12, fontFamily: FONT_BODY, fontSize: 14 }}>
+              {/* Garis timeline */}
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <span style={{
+                  width: 28, height: 28, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 13, fontWeight: 800, background: done ? C.primary : C.surface, color: done ? C.onPrimary : C.textSub,
+                  border: `1.5px solid ${done ? C.primary : C.line}`,
+                }}>{done ? "✓" : s.test_round}</span>
+                {!last && <span style={{ flex: 1, width: 2, minHeight: 14, background: done ? C.primary : C.line }} />}
+              </div>
+              <div style={{ flex: 1, minWidth: 0, paddingBottom: last ? 0 : 14, paddingTop: 3 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                  <span style={{ fontWeight: 700, color: C.text }}>{s.nama_tes}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: done ? C.primary : C.textSub, whiteSpace: "nowrap" }}>
+                    {done ? "Selesai" : "Belum"}
+                  </span>
+                </div>
+                <div style={{ fontSize: 13, color: C.textSub }}>
+                  {[s.fase, s.tanggal_pelaksanaan ? fmtDate(s.tanggal_pelaksanaan) : s.target_waktu].filter(Boolean).join(" · ")}
                 </div>
               </div>
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: done ? C.primary : C.textSub }}>
-                {done ? "Selesai" : "Belum"}
-              </span>
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ol>
     </div>
   );
 }
@@ -56,43 +64,54 @@ export default function ProfilePage({ players = [], physical = [], schedule = []
 
   if (loading) return <Loading />;
 
+  const picker = players.length > 0 && (
+    <div style={{ width: "min(100%, 300px)" }}>
+      <label htmlFor="profile-player" style={fieldLabel}>Pemain</label>
+      <select id="profile-player" value={player ? String(player.player_id) : ""}
+        onChange={(e) => setSelectedId(e.target.value)} style={input}>
+        {players.map((p) => <option key={p.player_id} value={String(p.player_id)}>{p.player_name}</option>)}
+      </select>
+    </div>
+  );
+
   return (
-    <PageShell maxWidth={900}>
+    <PageShell>
       {error && <ErrorBanner error={error} />}
 
-      <div style={{ marginBottom: 14 }}>
-        <label htmlFor="profile-player" style={fieldLabel}>Pemain</label>
-        <select id="profile-player" value={player ? String(player.player_id) : ""}
-          onChange={(e) => setSelectedId(e.target.value)} style={{ ...input, maxWidth: 320 }}>
-          {players.map((p) => <option key={p.player_id} value={String(p.player_id)}>{p.player_name}</option>)}
-        </select>
-      </div>
+      <PageTitle kicker="Tes Fisik" title="Profil" accent="Pemain"
+        sub="Skor fisik dan perkembangan satu pemain dibanding rata-rata tim." actions={picker} />
 
       {!player ? (
         <Empty>Belum ada pemain aktif.</Empty>
       ) : (
-        <>
+        <div className="stack">
           <ProfileHeader player={player} rounds={rounds} />
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {!benchmarks.length ? (
+          {!benchmarks.length ? (
+            <>
               <Empty>Tab <b>physical_benchmark</b> belum terbaca, jadi skor belum bisa dihitung.</Empty>
-            ) : !initial ? (
+              <ScheduleCard schedule={schedule} />
+            </>
+          ) : !initial ? (
+            <>
               <Empty>
                 Belum ada hasil tes fisik untuk {player.player_name}. Hasil akan muncul di sini setelah pelatih
                 mengisi tab <b>physical_test</b> di spreadsheet.
               </Empty>
-            ) : (
-              <>
+              <ScheduleCard schedule={schedule} />
+            </>
+          ) : (
+            <>
+              <div className={schedule.length ? "grid-split" : undefined}>
                 <PhysicalRadar benchmarks={benchmarks} schedule={schedule} initial={initial} latest={latest} />
-                <DeltaCards rounds={rounds} benchmarks={benchmarks} schedule={schedule} />
-                <TestTrendChart rounds={rounds} physical={physical} activeIds={activeIds}
-                  benchmarks={benchmarks} schedule={schedule} playerName={player.player_name} />
-              </>
-            )}
-            <ScheduleCard schedule={schedule} />
-          </div>
-        </>
+                <ScheduleCard schedule={schedule} />
+              </div>
+              <DeltaCards rounds={rounds} benchmarks={benchmarks} schedule={schedule} />
+              <TestTrendChart rounds={rounds} physical={physical} activeIds={activeIds}
+                benchmarks={benchmarks} schedule={schedule} playerName={player.player_name} />
+            </>
+          )}
+        </div>
       )}
     </PageShell>
   );

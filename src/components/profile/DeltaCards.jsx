@@ -1,6 +1,7 @@
 import { testDeltas, unitShort } from "../../utils/physicalScore";
 import { fmtNum } from "../../utils/statHelpers";
-import { C, FONT_BODY, card, sectionLabel } from "../../theme";
+import { C, FONT_BODY, card } from "../../theme";
+import { SectionHeader } from "../layout/PageShell";
 
 function fmtDelta(d) {
   const sign = d > 0 ? "+" : d < 0 ? "−" : "±";
@@ -14,14 +15,14 @@ export default function DeltaCards({ rounds, benchmarks, schedule }) {
 
   return (
     <div style={card}>
-      <div style={{ ...sectionLabel, marginBottom: 12 }}>Perubahan sejak Tes Awal</div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 150px), 1fr))", gap: 10 }}>
+      <SectionHeader title="Perubahan sejak Tes Awal" sub="Selisih nilai tes terbaru dibanding tes pertama" />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 170px), 1fr))", gap: 12 }}>
         {deltas.map(({ bench, delta, first, last, improved }) => {
           const unit = unitShort(bench.satuan);
           const tone = improved === true ? C.good : improved === false ? C.bad : C.textSub;
           const icon = improved === true ? "▲" : improved === false ? "▼" : "•";
           return (
-            <div key={bench.test_key} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: "10px 12px", background: improved === true ? C.primarySoft : C.bg }}>
+            <div key={bench.test_key} style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px", background: improved === true ? C.primarySoft : C.bg }}>
               <div style={{ fontSize: 12, color: C.textSub, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>{bench.label}</div>
               {delta === null ? (
                 <>
@@ -46,7 +47,7 @@ export default function DeltaCards({ rounds, benchmarks, schedule }) {
           );
         })}
       </div>
-      <div style={{ fontSize: 11, color: C.textSub, marginTop: 10, fontFamily: FONT_BODY }}>
+      <div style={{ fontSize: 12, color: C.textSub, marginTop: 12, fontFamily: FONT_BODY }}>
         ▲ hijau = membaik. Untuk sprint dan lane agility, waktu lebih kecil berarti membaik.
       </div>
     </div>

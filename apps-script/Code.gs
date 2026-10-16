@@ -12,14 +12,22 @@
 
 const SHEET_NAME = "shooting_data";
 const ZONES = ["corner_kiri", "wing_kiri", "top", "wing_kanan", "corner_kanan"];
+const VERSION = "2026-10-16-setvalues";
+
+// Cek versi yang sedang live tanpa menulis apa pun: buka URL /exec di browser
+function doGet() {
+  return json_({ ok: true, version: VERSION });
+}
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
+  let step = "validasi"; // dicantumkan di pesan error supaya tahu langkah mana yang gagal
   try {
     lock.waitLock(10000);
     const data = JSON.parse(e.postData.contents);
     const row = buildRecord_(data);
 
+    step = "baca sheet";
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     if (!sheet) throw new Error("Tab " + SHEET_NAME + " tidak ditemukan");
 
@@ -27,15 +35,22 @@ function doPost(e) {
       .map(function (h) { return String(h).trim().toLowerCase().replace(/\s+/g, "_"); });
     const values = headers.map(function (h) { return h in row ? row[h] : ""; });
 
-    sheet.appendRow(values);
+    // setValues ke baris kosong berikutnya, bukan appendRow: appendRow ikut mengatur
+    // format sel, dan itu ditolak kolom bertipe di Tabel.
+    step = "tulis baris";
+    const target = sheet.getLastRow() + 1;
+    sheet.getRange(target, 1, 1, values.length).setValues([values]);
 
-    // Kolom date disimpan sebagai tanggal asli dengan format yyyy-mm-dd (sama seperti baris lama)
+    // Di sheet biasa, paksa tampilan yyyy-mm-dd (sama seperti baris lama). Di Tabel dengan
+    // kolom bertipe Tanggal, format diatur tabel dan setNumberFormat ditolak — abaikan.
     const dateCol = headers.indexOf("date");
-    if (dateCol >= 0) sheet.getRange(sheet.getLastRow(), dateCol + 1).setNumberFormat("yyyy-mm-dd");
+    if (dateCol >= 0) {
+      try { sheet.getRange(target, dateCol + 1).setNumberFormat("yyyy-mm-dd"); } catch (_) {}
+    }
 
-    return json_({ ok: true, row: sheet.getLastRow() });
+    return json_({ ok: true, row: target });
   } catch (err) {
-    return json_({ ok: false, error: String(err && err.message || err) });
+    return json_({ ok: false, error: "[" + VERSION + " · " + step + "] " + String(err && err.message || err) });
   } finally {
     lock.releaseLock();
   }
@@ -50,7 +65,10 @@ function buildRecord_(d) {
   if (!d.player_name) throw new Error("player_name kosong");
 
   const rec = {
-    date: new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])),
+    // Angka serial tanggal Sheets (hari sejak 1899-12-30), bukan objek Date/teks:
+    // Date dan teks yang diurai jadi tanggal ikut men-set format sel, dan itu ditolak
+    // kolom bertipe Tanggal di Tabel. Angka tidak menyentuh format.
+    date: Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])) / 86400000 + 25569,
     player_id: playerId,
     player_name: String(d.player_name),
   };

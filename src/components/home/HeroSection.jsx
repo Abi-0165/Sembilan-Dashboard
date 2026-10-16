@@ -1,33 +1,52 @@
-import { C, primaryBtn } from "../../theme";
+import { C, FONT_BODY, primaryBtn } from "../../theme";
 
 export default function HeroSection({ onNavigate }) {
   return (
-    <div style={{ position: "relative", minHeight: "86vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", padding: "0 16px" }}>
-      <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0.07, pointerEvents: "none" }} viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
-        <rect x="100" y="50" width="600" height="500" rx="20" fill="none" stroke={C.primary} strokeWidth="3" />
-        <circle cx="400" cy="300" r="80" fill="none" stroke={C.primary} strokeWidth="2" />
-        <line x1="100" y1="300" x2="700" y2="300" stroke={C.primary} strokeWidth="2" />
-      </svg>
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ display: "inline-block", background: C.primary, color: C.onPrimary, padding: "6px 18px", borderRadius: 99, fontSize: 13, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 28, fontFamily: "'Barlow Condensed', sans-serif" }}>
-          SMAN 9 Surabaya
-        </div>
-        <h1 style={{ fontSize: "clamp(42px, 8vw, 100px)", fontWeight: 900, lineHeight: 0.9, margin: "0 0 8px", letterSpacing: "-0.02em", textTransform: "uppercase", fontFamily: "'Barlow Condensed', sans-serif" }}>
-          <span style={{ display: "block", color: C.accent }}>SEMBILAN</span>
-          <span style={{ display: "block", color: C.primary }}>BASKETBALL</span>
-        </h1>
-        <p style={{ fontSize: "clamp(15px, 2vw, 18px)", color: C.textSub, maxWidth: 480, margin: "20px auto 40px", lineHeight: 1.6, fontFamily: "'Barlow', sans-serif" }}>
-          Platform pelatihan & analisis statistik resmi tim basket SMAN 9 Surabaya.
-        </p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <button onClick={() => onNavigate("dashboard")} style={{ ...primaryBtn, padding: "15px 32px" }}>
-            Lihat Dashboard →
-          </button>
-          <button onClick={() => onNavigate("profil")} style={{ ...primaryBtn, padding: "15px 32px", background: C.surface, color: C.primary, border: `1.5px solid ${C.primary}` }}>
-            Profil Fisik
-          </button>
+    <section style={{ position: "relative", overflow: "hidden", background: C.brandDeep, color: C.white }}>
+      <style>{`
+        .hero { position: relative; min-height: min(88vh, 760px); display: flex; align-items: flex-end; }
+        .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
+        /* Gradasi hijau gelap supaya teks putih tetap terbaca di atas foto */
+        .hero-shade { position: absolute; inset: 0; background:
+          linear-gradient(0deg, ${C.brandDeep} 0%, ${C.brandDeep}E6 30%, ${C.brandDeep}66 65%, ${C.brandDeep}33 100%); }
+        .hero-body { position: relative; padding-top: 120px; padding-bottom: 56px; }
+        @media (min-width: 900px) {
+          .hero { align-items: center; }
+          .hero-shade { background: linear-gradient(90deg, ${C.brandDeep}F2 0%, ${C.brandDeep}CC 38%, ${C.brandDeep}33 75%, transparent 100%); }
+          .hero-body { padding-top: 96px; padding-bottom: 96px; }
+        }
+        .hero-ghost { background: transparent; color: ${C.white}; border: 1.5px solid #FFFFFF80; }
+        .hero-ghost:hover { background: #FFFFFF14; }
+      `}</style>
+
+      <div className="hero">
+        <img className="hero-img" src="/images/huddle.webp" alt="Pemain Sembilan Basketball melakukan huddle sebelum pertandingan" fetchPriority="high" />
+        <div className="hero-shade" />
+
+        <div className="container hero-body">
+          <div className="fade-up" style={{ maxWidth: 600 }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#FFFFFF1A", border: "1px solid #FFFFFF33", padding: "6px 14px", borderRadius: 99, fontSize: 13, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 24, backdropFilter: "blur(6px)" }}>
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#7FD39A" }} />
+              SMAN 9 Surabaya
+            </div>
+            <h1 style={{ fontSize: "clamp(56px, 11vw, 112px)", fontWeight: 900, lineHeight: 0.86, letterSpacing: "-0.02em", textTransform: "uppercase" }}>
+              <span style={{ display: "block" }}>Sembilan</span>
+              <span style={{ display: "block", color: C.brandLight }}>Basketball</span>
+            </h1>
+            <p style={{ fontSize: "clamp(16px, 2vw, 19px)", color: "#FFFFFFD9", maxWidth: 480, margin: "24px 0 36px", lineHeight: 1.6, fontFamily: FONT_BODY }}>
+              Platform pelatihan & analisis statistik resmi tim basket SMAN 9 Surabaya — pantau akurasi shooting dan perkembangan fisik pemain dari satu tempat.
+            </p>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <button onClick={() => onNavigate("dashboard")} style={{ ...primaryBtn, background: C.white, color: C.brand, border: `1.5px solid ${C.white}`, padding: "15px 28px" }}>
+                Lihat Dashboard →
+              </button>
+              <button className="hero-ghost" onClick={() => onNavigate("profil")} style={{ ...primaryBtn, background: undefined, border: undefined, color: C.white, padding: "15px 28px" }}>
+                Profil Fisik
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

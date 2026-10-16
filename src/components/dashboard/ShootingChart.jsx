@@ -4,15 +4,16 @@ import {
   Tooltip, ResponsiveContainer
 } from "recharts";
 import { ZONES, getPct, aggregateZones, fmtDate } from "../../utils/statHelpers";
-import { C, FONT_HEAD, card, sectionLabel } from "../../theme";
+import { C, FONT_HEAD, FONT_BODY, card, alpha } from "../../theme";
+import { SectionHeader } from "../layout/PageShell";
 
 const ZONE_COLORS = {
   overall:      C.primary,
-  corner_kiri:  "#2563EB",
-  wing_kiri:    "#C2410C",
-  top:          "#7C3AED",
-  wing_kanan:   "#0E7490",
-  corner_kanan: "#BE185D",
+  corner_kiri:  C.zone1,
+  wing_kiri:    C.zone2,
+  top:          C.zone3,
+  wing_kanan:   C.zone4,
+  corner_kanan: C.zone5,
 };
 
 const tick = { fill: C.textSub, fontSize: 11, fontFamily: FONT_HEAD };
@@ -34,13 +35,13 @@ function CustomTooltip({ active, payload, label }) {
 
 function ZoneToggle({ label, active, color, onClick }) {
   return (
-    <button onClick={onClick} style={{
+    <button onClick={onClick} aria-pressed={active} style={{
       display: "flex", alignItems: "center", gap: 6,
-      background: active ? color + "14" : C.surface,
+      background: active ? alpha(color, 10) : C.surface,
       border: `1px solid ${active ? color : C.line}`,
       color: active ? color : C.textSub,
-      padding: "5px 10px", borderRadius: 6,
-      fontSize: 11, fontWeight: 700, letterSpacing: "0.05em",
+      padding: "6px 12px", borderRadius: 99, minHeight: 32,
+      fontSize: 13, fontWeight: 700, letterSpacing: "0.04em",
       textTransform: "uppercase", cursor: "pointer",
       fontFamily: FONT_HEAD, transition: "all 0.15s",
     }}>
@@ -88,10 +89,8 @@ export default function ShootingChart({ data }) {
 
   return (
     <div style={card}>
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ ...sectionLabel, marginBottom: 12 }}>
-          Tren Field Goal % per Sesi
-        </div>
+      <div style={{ marginBottom: 18 }}>
+        <SectionHeader title="Tren Field Goal %" sub="Rata-rata per tanggal latihan. Pilih zona untuk dibandingkan." style={{ marginBottom: 12 }} />
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {TOGGLE_ITEMS.map(({ key, label }) => (
             <ZoneToggle key={key} label={label} active={activeZones.has(key)}
@@ -101,11 +100,11 @@ export default function ShootingChart({ data }) {
       </div>
 
       {chartData.length === 0 ? (
-        <div style={{ height: 220, display: "flex", alignItems: "center", justifyContent: "center", color: C.textSub, fontSize: 14 }}>
+        <div style={{ height: 260, display: "flex", alignItems: "center", justifyContent: "center", color: C.textSub, fontSize: 14, fontFamily: FONT_BODY, background: C.bg, borderRadius: 12, border: `1px dashed ${C.line}` }}>
           Tidak ada data untuk filter ini
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={240}>
+        <ResponsiveContainer width="100%" height={280}>
           <LineChart data={chartData} margin={{ top: 4, right: 12, left: -8, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={C.lineSoft} />
             <XAxis dataKey="date" tickFormatter={(d) => d.slice(5).split("-").reverse().join("/")}
@@ -119,13 +118,13 @@ export default function ShootingChart({ data }) {
                 strokeWidth={key === "overall" ? 2.5 : 1.8}
                 strokeDasharray={key === "overall" ? "0" : "4 2"}
                 dot={{ r: 3, fill: ZONE_COLORS[key] }} activeDot={{ r: 5 }}
-                connectNulls={false} />
+                connectNulls={false} isAnimationActive={false} />
             ))}
           </LineChart>
         </ResponsiveContainer>
       )}
 
-      <div style={{ marginTop: 10, fontSize: 11, color: C.textSub }}>
+      <div style={{ marginTop: 12, fontSize: 12, color: C.textSub, fontFamily: FONT_BODY }}>
         Overall = garis solid · Zona = garis putus-putus · Zona yang tidak dilatih (0/0) tidak digambar
       </div>
     </div>
